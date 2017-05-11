@@ -1,7 +1,5 @@
-﻿@{
-    Layout = null;
-}
-
+﻿@using TreeView.Models;
+@model List<TreeView.Models.Node>
 <!DOCTYPE html>
 
 <html>
@@ -17,10 +15,20 @@
     <div>
         <h2>班组建立</h2>
         <label for="">添加组名</label>
-        <input id="newName" type="text"/>
-        <label for="">上级组名</label>
         <input id="newName" type="text" />
-        
+        <label for="">上级组名</label>
+        <select id="pSelect1">
+            @foreach (var item in Model)
+            {
+                <option value="@item.Id">@item.Text</option>
+            }
+        </select>
+        @for (int i = 1; i < ViewBag.MaxLevel + 1; i++)
+        {
+            <input type="" />
+        }
+        <input id="newName" type="text" />
+
     </div>
     <div>
         <div id="tree" class="col-lg-2">
@@ -35,57 +43,86 @@
 <script type="text/javascript">
 
     var data = [
-  {
-      text: "Parent 1",
-      id:1111,
-      nodes: [
         {
-            text: "Child 1",
-            id:16,
+            text: "Parent 1",
+            id: 1111,
             nodes: [
-              {
-                  text: "Grandchild 1",
-                  id: 2222,
-              },
-              {
-                  text: "Grandchild 2",
-                  id: 3333,
-              }
+                {
+                    text: "Child 1",
+                    id: 16,
+                    nodes: [
+                        {
+                            text: "Grandchild 1",
+                            id: 2222
+                        },
+                        {
+                            text: "Grandchild 2",
+                            id: 3333
+                        }
+                    ]
+                },
+                {
+                    text: "Child 2",
+                    id: 5555
+                }
             ]
         },
         {
-            text: "Child 2",
-            id: 5555,
+            text: "Parent 2",
+            id: 4444
+        },
+        {
+            text: "Parent 3"
+        },
+        {
+            text: "Parent 4"
+        },
+        {
+            text: "Parent 5"
         }
-      ]
-  },
-  {
-      text: "Parent 2",
-      id: 4444,
-  },
-  {
-      text: "Parent 3"
-  },
-  {
-      text: "Parent 4"
-  },
-  {
-      text: "Parent 5"
-  }
     ];
 
     function getTree() {
         // Some logic to retrieve, or generate tree structure
         return data;
     }
+
     $('#tree').treeview(
-        {
-            color: "#428bca",
-            data: getTree(),
-            onNodeSelected: function (event, node) {
-                
-                $("#res").text(node.id);
+    {
+        color: "#428bca",
+        data: getTree(),
+        onNodeSelected: function(event, node) {
+
+            $("#res").text(node.id);
+        }
+    });
+
+
+    //根据父id与层级，获取下拉框数据源
+    function setNextSelectList(parentId, level) {
+        var paraData = {};
+        paraData.parentId = parentId;
+        paraData.level = level;
+
+        $.ajax({
+            url: '@Url.Action("GetNodesByParentId")',
+            type: "POST",
+            data: paraData,
+            success: function(data) {
+                alert(data);
             }
         });
+    }
+
+
+    //新增班组
+    function addNode() {
+        var groupName = $("#newName").text();
+        var level=
+        var paraData = {};
+
+
+    }
+
 
 </script>

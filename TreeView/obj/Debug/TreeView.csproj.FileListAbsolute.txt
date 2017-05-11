@@ -29,4 +29,3 @@ d:\users\ruanxx\documents\visual studio 2013\Projects\TreeView\TreeView\bin\Syst
 d:\users\ruanxx\documents\visual studio 2013\Projects\TreeView\TreeView\bin\System.Web.WebPages.Razor.xml
 d:\users\ruanxx\documents\visual studio 2013\Projects\TreeView\TreeView\obj\Debug\TreeView.dll
 d:\users\ruanxx\documents\visual studio 2013\Projects\TreeView\TreeView\obj\Debug\TreeView.pdb
-d:\users\ruanxx\documents\visual studio 2013\Projects\TreeView\TreeView\obj\Debug\TreeView.csprojResolveAssemblyReference.cache
