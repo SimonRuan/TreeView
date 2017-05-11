@@ -1,0 +1,91 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-1.9.1.min.js"></script>
+    <script src="~/Scripts/bootstrap-treeview.min.js"></script>
+    <title>Index</title>
+</head>
+<body>
+    <div>
+        <h2>班组建立</h2>
+        <label for="">添加组名</label>
+        <input id="newName" type="text"/>
+        <label for="">上级组名</label>
+        <input id="newName" type="text" />
+        
+    </div>
+    <div>
+        <div id="tree" class="col-lg-2">
+
+        </div>
+        <div id="res" class="col-lg-10">
+
+        </div>
+    </div>
+</body>
+</html>
+<script type="text/javascript">
+
+    var data = [
+  {
+      text: "Parent 1",
+      id:1111,
+      nodes: [
+        {
+            text: "Child 1",
+            id:16,
+            nodes: [
+              {
+                  text: "Grandchild 1",
+                  id: 2222,
+              },
+              {
+                  text: "Grandchild 2",
+                  id: 3333,
+              }
+            ]
+        },
+        {
+            text: "Child 2",
+            id: 5555,
+        }
+      ]
+  },
+  {
+      text: "Parent 2",
+      id: 4444,
+  },
+  {
+      text: "Parent 3"
+  },
+  {
+      text: "Parent 4"
+  },
+  {
+      text: "Parent 5"
+  }
+    ];
+
+    function getTree() {
+        // Some logic to retrieve, or generate tree structure
+        return data;
+    }
+    $('#tree').treeview(
+        {
+            color: "#428bca",
+            data: getTree(),
+            onNodeSelected: function (event, node) {
+                
+                $("#res").text(node.id);
+            }
+        });
+
+</script>
