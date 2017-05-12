@@ -54,8 +54,8 @@
             <span id="pName" > 的说法是否 </span><br />
             <label for="" > 组内人员 </label>
             <span id="Members" style="word-wrap:normal" >张三 李四 网二 烧烤了 水电费 </span><br />
-            <button class="btn btn-info"> 修改 </button>
-            <button class="btn btn-danger"> 删除 </button>
+            <button class="btn btn-info" id="modifyBtn"> 修改 </button>
+            <button class="btn btn-danger" id="delBtn"> 删除 </button>
         </div>
     </div>
 </body>
@@ -72,7 +72,7 @@
                     data: data,
                     color: "#428bca",
                     onNodeSelected: function (event, node) {
-                        $("#resDiv").text(node.id);
+                        setResDiv(node);
                     }
                 });
             }
@@ -120,7 +120,7 @@
             pId = $("#pSelect" + @(ViewBag.MaxLevel)).val();
         } else {
             level = pSelect.data("target");
-            pId = $("#pSelect" + (level-1)).val();
+            pId = $("#pSelect" + (level - 1)).val();
         }
         if (level == 0) {
             pId = 0;
@@ -139,6 +139,14 @@
                 location.reload();
             }
         });
+    }
+
+    function setResDiv(node) {
+        var resDiv = $("#resDiv");
+        $("#Name").text(node.text);
+        $("#pName").text(node.text);
+        $("#Name").text(node.text);
+
     }
 
     //下拉框绑定事件
