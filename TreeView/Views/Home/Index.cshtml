@@ -6,123 +6,148 @@
 <head>
     <meta name="viewport" content="width=device-width" />
 
-    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap.css" rel="stylesheet" />
     <script src="~/Scripts/jquery-1.9.1.min.js"></script>
     <script src="~/Scripts/bootstrap-treeview.min.js"></script>
+    <link href="~/Content/bootstrap-treeview.min.css" rel="stylesheet" />
     <title>Index</title>
+    <style type="text/css">
+        * {
+            font-family: "MicroSoft YaHei"
+        }
+    </style>
 </head>
 <body>
     <div>
         <h2>班组建立</h2>
         <label for="">添加组名</label>
-        <input id="newName" type="text" />
-        <label for="">上级组名</label>
-        <select id="pSelect1">
-            @foreach (var item in Model)
-            {
-                <option value="@item.Id">@item.Text</option>
-            }
-        </select>
-        @for (int i = 1; i < ViewBag.MaxLevel + 1; i++)
-        {
-            <input type="" />
-        }
-        <input id="newName" type="text" />
+        <input id="newName" class="input-sm" type="text" /><span style="color: red"> *</span>
+        <br />
 
+        <div class="form-inline">
+            <label for="">上级组名</label>
+            <select class="pSelect form-control" id="pSelect0" data-target="0">
+                <option value="-1">请选择</option>
+                @foreach (var item in Model)
+                {
+                    <option value="@item.id">@item.text</option>
+                }
+            </select>
+            @for (int i = 1; i < ViewBag.MaxLevel + 1; i++)
+            {
+                <select class="pSelect  form-control" id='pSelect@(i)' data-target="@i">
+                    <option value="-1">请选择</option>
+                </select>
+            }
+        </div>
+        <button class="btn btn-success" onclick="addGroup()">确认</button>
     </div>
+    <hr />
     <div>
         <div id="tree" class="col-lg-2">
-
         </div>
-        <div id="res" class="col-lg-10">
-
+        <div id="resDiv" class="col-lg-10">
+            <h2 class="h3" > 班组查看 </h2>
+            <label for="" > 组名 </label>
+            <span id="Name" > 手机里扣水电费 </span><br/>
+            <label for="" > 上级组名 </label>
+            <span id="pName" > 的说法是否 </span><br />
+            <label for="" > 组内人员 </label>
+            <span id="Members" style="word-wrap:normal" >张三 李四 网二 烧烤了 水电费 </span><br />
+            <button class="btn btn-info"> 修改 </button>
+            <button class="btn btn-danger"> 删除 </button>
         </div>
     </div>
 </body>
 </html>
 <script type="text/javascript">
 
-    var data = [
-        {
-            text: "Parent 1",
-            id: 1111,
-            nodes: [
+    function initTree() {
+        $.ajax({
+            url: '@Url.Action("GetTreeView")',
+            type: "GET",
+            success:function(data) {
+                $('#tree').treeview(
                 {
-                    text: "Child 1",
-                    id: 16,
-                    nodes: [
-                        {
-                            text: "Grandchild 1",
-                            id: 2222
-                        },
-                        {
-                            text: "Grandchild 2",
-                            id: 3333
-                        }
-                    ]
-                },
-                {
-                    text: "Child 2",
-                    id: 5555
-                }
-            ]
-        },
-        {
-            text: "Parent 2",
-            id: 4444
-        },
-        {
-            text: "Parent 3"
-        },
-        {
-            text: "Parent 4"
-        },
-        {
-            text: "Parent 5"
-        }
-    ];
-
-    function getTree() {
-        // Some logic to retrieve, or generate tree structure
-        return data;
+                    data: data,
+                    color: "#428bca",
+                    onNodeSelected: function (event, node) {
+                        $("#resDiv").text(node.id);
+                    }
+                });
+            }
+        });
     }
 
-    $('#tree').treeview(
-    {
-        color: "#428bca",
-        data: getTree(),
-        onNodeSelected: function(event, node) {
 
-            $("#res").text(node.id);
-        }
-    });
-
-
-    //根据父id与层级，获取下拉框数据源
-    function setNextSelectList(parentId, level) {
+    //根据当前选择的下拉框，初始化下一个下拉框
+    function setNextSelectList(e, data) {
+        var domId = e.target.id;
+        var pLevel = $('#' + domId).data("target");
+        var pGroupId = $('#' + domId).val();
         var paraData = {};
-        paraData.parentId = parentId;
-        paraData.level = level;
-
+        paraData.parentId = pGroupId;
         $.ajax({
-            url: '@Url.Action("GetNodesByParentId")',
+            url: '@Url.Action("GetGroupsByParentId")',
             type: "POST",
             data: paraData,
             success: function(data) {
-                alert(data);
+                var nextLevel = pLevel + 1;
+                var html = '<option value="-1">请选择</option>';
+                for (var i = pLevel+1; i < @ViewBag.MaxLevel + 1; i++) {
+                    $("#pSelect" + i).html(html);
+                }
+                for (var i = 0; i < data.length; i++) {
+                    html += '<option value="' + data[i].id + '">' + data[i].text + '</option>';
+                }
+                $("#pSelect" + nextLevel).html(html);
             }
         });
     }
 
 
     //新增班组
-    function addNode() {
-        var groupName = $("#newName").text();
-        var level=
+    function addGroup() {
+        if ($("#newName").val() == "") {
+            alert("请输入组名");
+            return;
+        }
+        var pSelect = $('.pSelect option:selected:first-child').parent();
+        var level;
+        var pId;
+        if (pSelect.length == 0) { //班组层级从0开始，故新增的班组层级=最后一个选择了的下拉框对应层级+1
+            level = @(ViewBag.MaxLevel + 1);
+            pId = $("#pSelect" + @(ViewBag.MaxLevel)).val();
+        } else {
+            level = pSelect.data("target");
+            pId = $("#pSelect" + (level-1)).val();
+        }
+        if (level == 0) {
+            pId = 0;
+        }
+        var name = $("#newName").val();
         var paraData = {};
-
-
+        paraData.Text = name;
+        paraData.ParentId = pId;
+        paraData.Level = level;
+        $.ajax({
+            url: '@Url.Action("AddGroup")',
+            type: "POST",
+            data: paraData,
+            success: function(data) {
+                alert(data.content);
+                location.reload();
+            }
+        });
     }
+
+    //下拉框绑定事件
+    $(function () {
+        $(".pSelect").change(function (e, data) {
+            setNextSelectList(e, data);
+        });
+        initTree();
+    });
 
 
 </script>

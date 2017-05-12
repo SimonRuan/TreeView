@@ -35,7 +35,7 @@ namespace TreeView.DAL
         /// </summary>
         /// <param name="level"></param>
         /// <returns></returns>
-        public List<Node> GetNodesByLevel(int level)
+        public List<Node> GetGroupsByLevel(int level)
         {
             var res = new List<Node>();
             string cmdStr = " SELECT *  FROM [Group](NOLOCK) WHERE [Level]=@Level ";
@@ -50,8 +50,8 @@ namespace TreeView.DAL
                 {
                     var item = new Node
                     {
-                        Id = Int32.Parse(reader["Id"].ToString()),
-                        Text = reader["GroupName"].ToString()
+                        id = Int32.Parse(reader["Id"].ToString()),
+                        text = reader["GroupName"].ToString()
                     };
                     res.Add(item);
                 }
@@ -64,7 +64,7 @@ namespace TreeView.DAL
         /// 获取所有班组
         /// </summary>
         /// <returns></returns>
-        public List<Node> GetAllNodes()
+        public List<Node> GetAllGroups()
         {
             var res = new List<Node>();
             string cmdStr = " SELECT *  FROM [Group](NOLOCK) ";
@@ -78,12 +78,12 @@ namespace TreeView.DAL
                 {
                     var item = new Node
                     {
-                        Id = Int32.Parse(reader["Id"].ToString()),
-                        Text = reader["GroupName"].ToString(),
-                        Level = Int32.Parse(reader["Level"].ToString()),
-                        ParentId = Int32.Parse(reader["ParentId"].ToString()),
-                        CreateTime = DateTime.Parse(reader["CreateTime"].ToString()),
-                        ModifyTime = DateTime.Parse(reader["ModifyTime"].ToString())
+                        id = Int32.Parse(reader["Id"].ToString()),
+                        text = reader["GroupName"].ToString(),
+                        level = Int32.Parse(reader["Level"].ToString()),
+                        parentId = Int32.Parse(reader["ParentId"].ToString()),
+                        createTime = DateTime.Parse(reader["CreateTime"].ToString()),
+                        modifyTime = DateTime.Parse(reader["ModifyTime"].ToString())
                     };
                     res.Add(item);
                 }
@@ -104,15 +104,15 @@ namespace TreeView.DAL
             sb.AppendLine(" INSERT INTO [Group] ");
             sb.AppendLine(" ( GroupName ,[Level] ,ParentId ,CreateTime ,ModifyTime ) ");
             sb.AppendLine(" VALUES ");
-            sb.AppendLine(" ( @GroupName ,@[Level] ,@ParentId ,@CreateTime ,@ModifyTime ) ");
+            sb.AppendLine(" ( @GroupName ,@Level ,@ParentId ,@CreateTime ,@ModifyTime ) ");
 
             var conn = new SqlConnection(connStr);
             var cmd = new SqlCommand(sb.ToString(), conn);
-            cmd.Parameters.AddWithValue("@GroupName", node.Text);
-            cmd.Parameters.AddWithValue("@[Level]", node.Level);
-            cmd.Parameters.AddWithValue("@ParentId", node.ParentId);
-            cmd.Parameters.AddWithValue("@CreateTime", node.CreateTime);
-            cmd.Parameters.AddWithValue("@ModifyTime", node.ModifyTime);
+            cmd.Parameters.AddWithValue("@GroupName", node.text);
+            cmd.Parameters.AddWithValue("@Level", node.level);
+            cmd.Parameters.AddWithValue("@ParentId", node.parentId);
+            cmd.Parameters.AddWithValue("@CreateTime", node.createTime);
+            cmd.Parameters.AddWithValue("@ModifyTime", node.modifyTime);
             using (conn)
             {
                 conn.Open();

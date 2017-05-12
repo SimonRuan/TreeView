@@ -10,24 +10,24 @@ namespace TreeView.Models
     /// </summary>
     public class Node
     {
-        public int Id { get; set; }
+        public int id { get; set; }
         /// <summary>
         /// 对应班组表的GroupName
         /// </summary>
-        public string Text { get; set; }
-        public int ParentId { get; set; }
+        public string text { get; set; }
+        public int parentId { get; set; }
 
         /// <summary>
         /// 层级，从0开始
         /// </summary>
-        public int Level { get; set; }
-        public DateTime CreateTime { get; set; }
-        public DateTime ModifyTime { get; set; }
+        public int level { get; set; }
+        public DateTime createTime { get; set; }
+        public DateTime modifyTime { get; set; }
 
         /// <summary>
         /// 子节点
         /// </summary>
-        public List<Node> Nodes { get; set; }
+        public List<Node> nodes { get; set; }
 
     }
 }

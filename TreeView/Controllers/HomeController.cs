@@ -15,7 +15,7 @@ namespace TreeView.Controllers
         public ActionResult Index()
         {
             ViewBag.MaxLevel = groupDal.GetMaxLevel(); //获取最大层级，来确定“上级班组”下拉框的个数
-            List<Node> model = groupDal.GetAllNodes().Where(x=>x.Level==0).ToList();
+            List<Node> model = groupDal.GetAllGroups().Where(x => x.level == 0).ToList();
             return View(model);
         }
 
@@ -24,9 +24,11 @@ namespace TreeView.Controllers
         /// </summary>
         /// <param name="parentId"></param>
         /// <returns></returns>
-        public List<Node> GetNodesByParentId(int parentId)
+        [HttpPost]
+        public JsonResult GetGroupsByParentId(int parentId)
         {
-            return groupDal.GetAllNodes().Where(x => x.ParentId == parentId).ToList();
+            var res = groupDal.GetAllGroups().Where(x => x.parentId == parentId).ToList();
+            return Json(res, JsonRequestBehavior.AllowGet);
         }
 
         /// <summary>
@@ -37,13 +39,39 @@ namespace TreeView.Controllers
         [HttpPost]
         public JsonResult AddGroup(Node node)
         {
-            node.CreateTime = node.ModifyTime = DateTime.Now;
+            node.createTime = node.modifyTime = DateTime.Now;
             var res = groupDal.AddGroup(node);
             if (res > 0)
             {
                 return Json(new { flag = "1", content = "成功新增班组！" }, JsonRequestBehavior.AllowGet);
             }
             return Json(new { flag = "0", content = "新增班组失败！" }, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// 获取树状视图
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public JsonResult GetTreeView()
+        {
+            var allGroups = groupDal.GetAllGroups();
+            var maxLevel = allGroups.Select(x => x.level).Max();
+            if (maxLevel == 0) return Json(allGroups, JsonRequestBehavior.AllowGet);
+            var res = new List<Node>();
+            for (int i = maxLevel - 1; i > -1; i--)
+            {
+                foreach (var item in allGroups.Where(x => x.level == i))
+                {
+                    item.nodes = allGroups.Any(x => x.parentId == item.id) ? allGroups.Where(x => x.parentId == item.id).ToList():null;
+                }
+            }
+            res = allGroups.Where(x => x.level == 0).ToList();
+            return Json(res, JsonRequestBehavior.AllowGet); ;
+        }
+
+        private void SetTreeView()
+        {
 
         }
     }
